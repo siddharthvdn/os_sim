@@ -70,6 +70,8 @@ def firstfit(processno,m,ch):
 	if ch==1:
 		print "process",processno,"request"
 		if hole0 == []:
+			log[0]=Label(frame1,bg="black",width=300,height=50,text="Not Enough Memory",fg="white")
+                        log[0].place(x=5,y=650,height=50,width=290)
 			print "Memory Full"
 			
 		else:
@@ -79,33 +81,34 @@ def firstfit(processno,m,ch):
 				if i[1]>= m:
 					flag=1
 					occupied0.append([i[0],m])
+					print i[0]
 					process0.append(processno)
-					occupied0.sort()
 					hole0.remove(i)
 					processindex0.append([i[0],processno])
 					processindex0.sort()
 					print "process",processno, "added"
 					box=Label(label[0],width=10,height=30,bg='green',text="Process"+str(processno),borderwidth=5,relief=RAISED)
+					box.place(y=(float(occupied0[np.shape(occupied0)[0]-1][0])/100)*500,height=(float(occupied0[np.shape(occupied0)[0]-1][1])/100)*500,width=100)	
 					box0.append([processno,box])
-					for j in xrange(np.shape(box0)[0]):
-						if box0[j][0]==processno:
-							mem=0
-							for k in xrange(np.shape(processindex0)[0]):
-								if processindex0[k][1]==processno:
-									break
-							try:
-								box0[j][1].place(y=(float(occupied0[k][0])/100)*500,height=(float(occupied0[k][1])/100)*500,width=100)
-							except:
-								box0[j][1].place(height=(float(occupied0[k][1])/100)*500,width=100)
-								
-							log[0]=Label(frame1,bg="black",width=300,height=50,text="Process "+str(processno)+" added",fg="white")
-							log[0].place(x=5,y=650,height=50,width=290)
+					occupied0.sort()
+					log[0]=Label(frame1,bg="black",width=300,height=50,text="Process "+str(processno)+" added",fg="white")
+					log[0].place(x=5,y=650,height=50,width=290)
 					if i[1] !=m:
 						hole0.append([i[0]+m,i[1]-m])
 						hole0.sort()
 						break
 			if flag == 0:
-					print " Not enough memory for continuous allocation"
+				free=0
+				for i in xrange(np.shape(hole0)[0]):
+					free=free+hole0[i][1]
+				if free>=m:
+					print "External fragmentation"
+					log[0]=Label(frame1,bg="black",width=300,height=50,text="External Fragmentation !! ",fg="white")
+					log[0].place(x=5,y=650,height=50,width=290)
+				else:
+					log[0]=Label(frame1,bg="black",width=300,height=50,text="Not Enough Memory",fg="white")
+					log[0].place(x=5,y=650,height=50,width=290)
+					print "Not enough memory" 
 	
 	else:
 		if occupied0!= [] :
@@ -113,30 +116,30 @@ def firstfit(processno,m,ch):
 			for j in xrange(np.shape(processindex0)[0]):
 				if processindex0[j][1]==p:
 					print "process", processindex0[j][1], "removed"
-					rem=processindex0[j][1]
+					rem=processindex0[j][0]
 					break
 			for k in xrange(np.shape(box0)[0]):
-				if rem==box0[k][0]:
+				if p==box0[k][0]:
 					box0[k][1].config(bg='red',text='',relief=FLAT)
 					box0.pop(k)
 					break
 			log[0]=Label(frame1,bg="black",width=300,height=50,text="Process "+str(processno)+" removed",fg="white")
 			log[0].place(x=5,y=650,height=50,width=290)
 			for i in occupied0:
-				if i[0]==p:
+				if i[0]==rem:
 					break
 			process0.remove(p)
 			occupied0.remove(i)
 			hole0.append(i)
 			hole0.sort()
 			processindex0.pop(j)
-			for x in xrange(np.shape(hole0)[0]):
-				if i==hole0[x]:
-					if (hole0[x][0]+hole0[x][1]!=100)&(hole0[x][0]+hole0[x][1]==hole0[x+1][0]):
-						hole0[x][1]+=hole0[x+1][1]
-						hole0.pop(x+1)
-						break
-		
+			for x in xrange(np.shape(hole0)[0]-1):
+				if (hole0[x][0]+hole0[x][1]!=100)&(hole0[x][0]+hole0[x][1]==hole0[x+1][0]):
+					hole0[x][1]+=hole0[x+1][1]
+					hole0.pop(x+1)
+					break
+	print hole0
+	print occupied0		
 
 #--------------------------------------------------FIRST_FIT------------------------------------------------------------------------
 #--------------------------------------------------BEST_FIT------------------------------------------------------------------------
@@ -153,7 +156,9 @@ def bestfit(processno,m,ch):
 		print "process",processno,"request"
 		if hole1 == []:
 			print "Memory Full"
-			
+			log[1]=Label(frame1,bg="black",width=300,height=50,text="Not Enough Memory",fg="white")
+                        log[1].place(x=305,y=650,height=50,width=290)
+	
 		else:
 			print m
 			flag=0
@@ -167,60 +172,61 @@ def bestfit(processno,m,ch):
 			if flag:
 				occupied1.append([pos[0],m])
 				process1.append(processno)
-				occupied1.sort()
 				hole1.remove(pos)
 				processindex1.append([pos[0],processno])
 				processindex1.sort()
 				print "process",processno, "added"
 				box=Label(label[1],width=10,height=30,bg='green',text="Process"+str(processno),borderwidth=5,relief=RAISED)
+				box.place(y=(float(occupied1[np.shape(occupied1)[0]-1][0])/100)*500,height=(float(occupied1[np.shape(occupied1)[0]-1][1])/100)*500,width=100)
 				box1.append([processno,box])
-				for j in xrange(np.shape(box0)[0]):
-					if box1[j][0]==processno:
-						mem=0
-						for k in xrange(np.shape(processindex1)[0]):
-							if processindex1[k][1]==processno:
-								break
-						try:
-							box1[j][1].place(y=(float(occupied1[k][0])/100)*500,height=(float(occupied1[k][1])/100)*500,width=100)
-						except:
-							box1[j][1].place(height=(float(occupied1[k][1])/100)*500,width=100)
-						log[1]=Label(frame1,bg="black",width=300,height=50,text="Process "+str(processno)+" added",fg="white")
-						log[1].place(x=305,y=650,height=50,width=290)
-				if i[1] !=m:
-					hole1.append([i[0]+m,i[1]-m])
+				occupied1.sort()
+				log[1]=Label(frame1,bg="black",width=300,height=50,text="Process "+str(processno)+" added",fg="white")
+				log[1].place(x=305,y=650,height=50,width=290)
+				if pos[1] !=m:
+					hole1.append([pos[0]+m,pos[1]-m])
 					hole1.sort()
 			if flag == 0:
-					print " Not enough memory for continuous allocation"
-	
+				free=0
+				for i in xrange(np.shape(hole1)[0]):
+					free=free+hole1[i][1]
+				if free>=m:
+					print "External fragmentation"
+					log[1]=Label(frame1,bg="black",width=300,height=50,text="External Fragmentation !! ",fg="white")
+					log[1].place(x=305,y=650,height=50,width=290)
+				else:
+					log[1]=Label(frame1,bg="black",width=300,height=50,text="Not Enough Memory",fg="white")
+					log[1].place(x=305,y=650,height=50,width=290)
+					print "Not enough memory" 
 	else:
 		if occupied1!= [] :
 			p=processno
 			for j in xrange(np.shape(processindex1)[0]):
 				if processindex1[j][1]==p:
 					print "process", processindex1[j][1], "removed"
-					rem=processindex1[j][1]
+					rem=processindex1[j][0]
 					break
 			for k in xrange(np.shape(box1)[0]):
-				if rem==box1[k][0]:
+				if p==box1[k][0]:
 					box1[k][1].config(bg='red',text='',relief=FLAT)
 					box1.pop(k)
 					break
 			log[1]=Label(frame1,bg="black",width=300,height=50,text="Process "+str(processno)+" removed",fg="white")
 			log[1].place(x=305,y=650,height=50,width=290)
 			for i in occupied1:
-				if i[0]==p:
+				if i[0]==rem:
 					break
 			process1.remove(p)
 			occupied1.remove(i)
 			hole1.append(i)
 			hole1.sort()
 			processindex1.pop(j)
-			for x in xrange(np.shape(hole1)[0]):
-				if i==hole1[x]:
-					if (hole1[x][0]+hole1[x][1]!=100)&(hole1[x][0]+hole1[x][1]==hole1[x+1][0]):
-						hole1[x][1]+=hole1[x+1][1]
-						hole1.pop(x+1)
-						break
+			for x in xrange(np.shape(hole1)[0]-1):
+				if (hole1[x][0]+hole1[x][1]!=100)&(hole1[x][0]+hole1[x][1]==hole1[x+1][0]):
+					hole1[x][1]+=hole1[x+1][1]
+					hole1.pop(x+1)
+					break
+	print hole1
+	print occupied2
 
 
 
@@ -236,50 +242,55 @@ process2=[]
 block2=[]
 processindex2=[]
 box2=[]
-mini=10000
+mini=0
 def worstfit(processno,m,ch):
 	if ch==1:
 		print "process",processno,"request"
 		if hole2 == []:
+			log[2]=Label(frame1,bg="black",width=300,height=50,text="Not Enough Memory ",fg="white")
+                        log[2].place(x=605,y=650,height=50,width=290)
+                        print "Not enough memory"
+
 			print "Memory Full"
 			
 		else:
 			print m
 			flag=0
-			mini=10000
+			mini=-1
 			for i in hole2:
-				if (i[1]>=m)&(i[1]<mini):
+				if (i[1]>=m)&(i[1]>mini):
 					flag=1
 					pos=i;
-					mini=i[1]
+					maxi=i[1]
 			
 			if flag:
 				occupied2.append([pos[0],m])
 				process2.append(processno)
-				occupied2.sort()
 				hole2.remove(pos)
 				processindex2.append([pos[0],processno])
 				processindex2.sort()
 				print "process",processno, "added"
 				box=Label(label[2],width=10,height=30,bg='green',text="Process"+str(processno),borderwidth=5,relief=RAISED)
+				box.place(y=(float(occupied2[np.shape(occupied2)[0]-1][0])/100)*500,height=(float(occupied2[np.shape(occupied2)[0]-1][1])/100)*500,width=100)
 				box2.append([processno,box])
-				for j in xrange(np.shape(box0)[0]):
-					if box2[j][0]==processno:
-						mem=0
-						for k in xrange(np.shape(processindex2)[0]):
-							if processindex2[k][1]==processno:
-								break
-						try:
-							box2[j][1].place(y=(float(occupied2[k][0])/100)*500,height=(float(occupied2[k][1])/100)*500,width=100)
-						except:
-							box2[j][1].place(height=(float(occupied2[k][1])/100)*500,width=100)
+				occupied2.sort()
 				log[2]=Label(frame1,bg="black",width=300,height=50,text="Process "+str(processno)+" added",fg="white")
 				log[2].place(x=605,y=650,height=50,width=290)
-				if i[1] !=m:
-					hole2.append([i[0]+m,i[1]-m])
+				if pos[1] !=m:
+					hole2.append([pos[0]+m,pos[1]-m])
 					hole2.sort()
 			if flag == 0:
-					print " Not enough memory for continuous allocation"
+				free=0
+				for i in xrange(np.shape(hole2)[0]):
+					free=free+hole2[i][1]
+				if free>=m:
+					print "External fragmentation"
+					log[2]=Label(frame1,bg="black",width=300,height=50,text="External Fragmentation !! ",fg="white")
+					log[2].place(x=605,y=650,height=50,width=290)
+				else:
+					log[2]=Label(frame1,bg="black",width=300,height=50,text="Not Enough Memory ",fg="white")
+					log[2].place(x=605,y=650,height=50,width=290)
+					print "Not enough memory" 
 	
 	else:
 		if occupied2!= [] :
@@ -287,32 +298,32 @@ def worstfit(processno,m,ch):
 			for j in xrange(np.shape(processindex2)[0]):
 				if processindex2[j][1]==p:
 					print "process", processindex2[j][1], "removed"
-					rem=processindex2[j][1]
+					rem=processindex2[j][0]
 					break
 			for k in xrange(np.shape(box2)[0]):
-				if rem==box2[k][0]:
+				if p==box2[k][0]:
 					box2[k][1].config(bg='red',text='',relief=FLAT)
 					box2.pop(k)
 					break
 			log[2]=Label(frame1,bg="black",width=300,height=50,text="Process "+str(processno)+" removed",fg="white")
 			log[2].place(x=605,y=650,height=50,width=290)
 			for i in occupied2:
-				if i[0]==p:
+				if i[0]==rem:
 					break
 			process2.remove(p)
 			occupied2.remove(i)
 			hole2.append(i)
 			hole2.sort()
 			processindex2.pop(j)
-			for x in xrange(np.shape(hole2)[0]):
-				if i==hole2[x]:
-					if (hole2[x][0]+hole2[x][1]!=100)&(hole2[x][0]+hole2[x][1]==hole2[x+1][0]):
-						hole2[x][1]+=hole2[x+1][1]
-						hole2.pop(x+1)
-						break
+			for x in xrange(np.shape(hole2)[0]-1):
+				if (hole2[x][0]+hole2[x][1]!=100)&(hole2[x][0]+hole2[x][1]==hole2[x+1][0]):
+					hole2[x][1]+=hole2[x+1][1]
+					hole2.pop(x+1)
+					break
 
 
-
+	print hole2
+	print occupied2
 
 
 
